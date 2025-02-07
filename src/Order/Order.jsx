@@ -20,7 +20,7 @@ function Order() {
   console.log(type);
 
   useEffect(() => {
-    axios.get("http://localhost:4000/order").then((res) => {
+    axios.get("http://localhost:4001/indexCtrl").then((res) => {
       console.log(res.data);
       if (res.data.msg) {
         alert(res.data.msg);

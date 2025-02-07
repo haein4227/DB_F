@@ -1,42 +1,31 @@
-import React, { useState } from "react";
 import axios from "axios";
-import "./Login.css";
+import React, { useState } from "react";
 
-function LoginPopup({ onClose, onLoginSuccess }) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+axios.defaults.withCredentials = true;
 
-  const handleLogin = async () => {
+function Login() {
+  const [userInfo, setUserInfo] = useState({
+    id: "",
+    pw: "",
+  });
+
+  function onChangeLogin(e) {
+    const { name, value } = e.target;
+    setUserInfo({
+      ...userInfo,
+      [name]: value,
+    });
+  }
+//API 요청
+  function onClickLogin() {
     try {
-      // 유효성 검사
-      if (!username || !password) {
-        setError("아이디와 비밀번호를 모두 입력해주세요.");
-        return;
-      }
-
-      // API 요청
-      const response = await axios.post("http://localhost:4001/indexCtrl", {
-        username,
-        password
-      });
-
-      // 로그인 성공 처리
-      if (response.data && response.data.userId) {
-        sessionStorage.setItem("userId", response.data.userId);
-        sessionStorage.setItem("userToken", response.data.token); // JWT 토큰이 있다고 가정
-
-        setSuccessMessage("로그인 성공!");
-        setError("");
-
-        setTimeout(() => {
-          onLoginSuccess(response.data.userId);
-          onClose();
-        }, 1000);
-      } else {
-        setError("유효한 사용자 정보를 찾을 수 없습니다.");
-      }
+      axios
+        .post("http://localhost:4001/indexCtrl", { user: userInfo })
+        .then((res) => {
+          console.log(res.data);
+          window.location.replace("/");
+        });
+    //에러 처리
     } catch (err) {
       const errorMessage = err.response?.data?.message ||
         "로그인에 실패했습니다. 다시 시도해주세요.";
@@ -45,33 +34,28 @@ function LoginPopup({ onClose, onLoginSuccess }) {
       console.error("로그인 오류:", err.response || err.message);
     }
   };
-
+//로그인 기능
   return (
-    <div className="login-popup-backdrop">
-      <div className="login-popup">
-        <button className="close-btn" onClick={onClose}>×</button>
-        <h2>로그인</h2>
-        <div className="input-group">
-          <input
-            type="text"
-            placeholder="아이디"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="비밀번호"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <div className="button">
-          <button onClick={handleLogin}>로그인</button>
-          <button onClick={onClose}>취소</button>
-        </div>
-        {error && <p className="er-m">{error}</p>}
-        {successMessage && <p className="suc-m">{successMessage}</p>}
-      </div>
+    <div>
+      <h1>로그인</h1>
+      <input
+        type="text"
+        placeholder="아이디"
+        onChange={onChangeLogin}
+        name="id"
+        value={userInfo.id}
+      />
+      <br />
+      <input
+        type="password"
+        placeholder="비밀번호"
+        onChange={onChangeLogin}
+        name="pw"
+        value={userInfo.pw}
+      />
+      <br />
+      <button onClick={onClickLogin}>로그인</button>
+      <button onClick={onClose}>취소</button>
     </div>
   );
 }
