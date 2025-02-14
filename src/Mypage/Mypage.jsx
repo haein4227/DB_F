@@ -17,7 +17,7 @@ function MyPage() {
   });
 
   useEffect(() => {
-    axios.get("http://localhost:4001/indexCtrl").then((res) => {
+    axios.get("http://localhost:4001/main.js").then((res) => {
       if (res.data.message) {
         setUserName(res.data.name);
         alert(res.data.message);
@@ -70,7 +70,7 @@ function MyPage() {
   return (
     <div>
       <h1>{userName}님의 페이지</h1>
-      <div>동서페이 잔액: {pay}원</div>
+      <div>페이 잔액: {pay}원</div>
 
       <div>카드 정보</div>
       <ul>
@@ -139,7 +139,7 @@ function MyPage() {
         name="detail"
         value={userAddr.detail}
       />
-      <button onClick={onClickAddr}>기입하기</button>
+      <button onClick={onClickAddr}>가입하기</button>
     </div>
   );
 }

@@ -9,7 +9,7 @@ function Book() {
   const nav = useNavigate();
 
   useEffect(() => {
-    axios.get("http://localhost:4001/indexCtrl").then((res) => {
+    axios.get("http://localhost:4001/book.js").then((res) => {
       setBookList(res.data.list);
       setIsLogin(res.data.user);
     });

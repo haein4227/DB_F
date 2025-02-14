@@ -9,10 +9,9 @@ function Header() {
 
   useEffect(() => {
     axios.get("http://localhost:4001/indexCtrl").then((res) => {
-      console.log(res.data);
-      setIsLogIn(res.data);
+      setIsLogIn(!!res.data.user);
     });
-  }, [isLogIn]);
+  }, []);
 
   function onClickMain() {
     nav("/");
@@ -65,14 +64,24 @@ function Header() {
     }
   }
   return (
-    <div>
-      <span onClick={onClickMain}>메인 </span>
-      <span onClick={onClickLogin}>로그인 </span>
-      <span onClick={onClickBook}>도서목록 </span>
-      <span onClick={onClickCart}>장바구니 </span>
-      <span onClick={onClickOrderList}>주문목록 </span>
-      <span onClick={onClickMyPage}>마이페이지 </span>
-      <span onClick={onClickLogout}>로그아웃 </span>
+    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div>
+        <span onClick={onClickMain}>메인</span>
+      </div>
+      <div>
+        {isLogIn ? (
+          <span onClick={onClickLogout}>로그아웃</span>
+        ) : (
+          <>
+            <span onClick={onClickLogin}>로그인</span>
+            <span onClick={() => nav("/register")}>회원가입</span>
+          </>
+        )}
+        <span onClick={onClickBook}>도서목록</span>
+        <span onClick={onClickCart}>장바구니</span>
+        <span onClick={onClickOrderList}>주문목록</span>
+        <span onClick={onClickMyPage}>마이페이지</span>
+      </div>
     </div>
   );
 }

@@ -7,5 +7,8 @@ export async function POST(request) {
   console.log("장바구니 추가 요청:", body)
 
   // 임시 응답
-  return
-    .json({ message: "장바구니에 추가 성공" }, { status: 200 })
+  return new Response(JSON.stringify({ message: "장바구니에 추가 성공" }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  })
+}

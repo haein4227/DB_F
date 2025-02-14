@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 axios.defaults.withCredentials = true;
 
@@ -8,6 +8,16 @@ function Login() {
     id: "",
     pw: "",
   });
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    axios.get("http://localhost:4001/loginCtrl")
+      .then(res => {
+        if(res.data.loggedIn) {
+          window.location.replace("/");
+        }
+      });
+  }, []);
 
   function onChangeLogin(e) {
     const { name, value } = e.target;
@@ -17,15 +27,11 @@ function Login() {
     });
   }
 //API 요청
-  function onClickLogin() {
+  async function onClickLogin() {
     try {
-      axios
-        .post("http://localhost:4001/indexCtrl", { user: userInfo })
-        .then((res) => {
-          console.log(res.data);
-          window.location.replace("/");
-        });
-    //에러 처리
+      const res = await axios.post("http://localhost:4001/loginCtrl", { user: userInfo });
+      console.log(res.data);
+      window.location.replace("/");
     } catch (err) {
       const errorMessage = err.response?.data?.message ||
         "로그인에 실패했습니다. 다시 시도해주세요.";
