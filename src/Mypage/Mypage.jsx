@@ -15,35 +15,41 @@ function MyPage() {
     basic: "",
     detail: "",
   });
+  const [pay, setPay] = useState(0);
+  const [isLogIn, setIsLogIn] = useState(false);
+  const [orderData, setOrderData] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:4001/main.js").then((res) => {
-      if (res.data.message) {
-        setUserName(res.data.name);
-        alert(res.data.message);
-      } else {
-        setUserName(res.data.name);
-
-        if (res.data.card) {
-          const cardData = res.data.card.map((card) => ({
-            cardId: card.card_id,
-            period: card.period,
-            company: card.company,
-          }));
-          setCardInfo(cardData);
-        }
-
-        if (res.data.addr) {
-          const addrData = res.data.addr.map((addr) => ({
-            zipCode: addr.zip_code,
-            basic: addr.basic,
-            detail: addr.detail,
-          }));
-          setAddrInfo(addrData);
-        }
-        setPay(res.data.pay[0].creadit);
+    axios.get("http://localhost:4001/mypage").then((res) => {
+      if (res.data.msg) {
+        alert(res.data.msg);
+        return;
       }
+      setUserName(res.data.name);
+      setCardInfo(res.data.card || []);
+      setAddrInfo(res.data.home || []);
+      setPay(res.data.pay?.[0]?.credit || 0);
+    }).catch(err => {
+      console.error(err);
+      alert("처리 중 오류 발생");
     });
+  }, []);
+
+  useEffect(() => {
+    axios.get("http://localhost:4001/state").then((res) => {
+      setIsLogIn(!!res.data);
+    }).catch(err => {
+      console.error(err);
+      alert("처리 중 오류 발생");
+    });
+  }, []);
+
+  useEffect(() => {
+    axios.get("http://localhost:4001/order/history")
+      .then(res => {
+        const groupedData = groupByDateTime(res.data);
+        setOrderData(groupedData);
+      });
   }, []);
 
   function onChangeCard(e) {
@@ -57,14 +63,42 @@ function MyPage() {
   }
 
   function onClickCard() {
-    axios.post("http://localhost:4001/indexCtrl", { card: userCard });
-    console.log(userCard);
-    window.location.reload();
+    axios.post("http://localhost:4001/indexCtrl", { card: userCard })
+      .then(() => {
+        console.log(userCard);
+        window.location.reload();
+      })
+      .catch(err => {
+        console.error(err);
+        alert("처리 중 오류 발생");
+      });
   }
 
   function onClickAddr() {
-    axios.post("http://localhost:4001/indexCtrl", { addr: userAddr });
-    window.location.reload();
+    axios.post("http://localhost:4001/indexCtrl", { addr: userAddr })
+      .then(() => {
+        window.location.reload();
+      })
+      .catch(err => {
+        console.error(err);
+        alert("처리 중 오류 발생");
+      });
+  }
+
+  // 카드 삭제 핸들러
+  function onClickDeleteCard(cardId) {
+    axios.delete(`http://localhost:4001/mypage/card/${cardId}`)
+      .then(() => {
+        setCardInfo(prev => prev.filter(card => card.cardId !== cardId));
+      });
+  }
+
+  // 주소 삭제 핸들러
+  function onClickDeleteAddr(addrId) {
+    axios.delete(`http://localhost:4001/mypage/addr/${addrId}`)
+      .then(() => {
+        setAddrInfo(prev => prev.filter(addr => addr.id !== addrId));
+      });
   }
 
   return (
@@ -79,6 +113,7 @@ function MyPage() {
             카드 번호: {card.cardId} <br />
             유효기간: {card.period} <br />
             카드사: {card.company}
+            <button onClick={() => onClickDeleteCard(card.cardId)}>삭제</button>
           </li>
         ))}
       </ul>
@@ -89,6 +124,7 @@ function MyPage() {
             우편번호: {addr.zipCode} <br />
             기본주소: {addr.basic} <br />
             상세주소: {addr.detail}
+            <button onClick={() => onClickDeleteAddr(addr.id)}>삭제</button>
           </li>
         ))}
       </ul>

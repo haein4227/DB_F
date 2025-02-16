@@ -48,6 +48,16 @@ function BookDetail() {
     setTotal(bookInfo.price * quantity);
   }, [onClickPlus, onClickminus]);
 
+  const handleCartAdd = () => {
+    axios.post("http://localhost:4001/cart", {
+      book_num: bookInfo.id,
+      amount: quantity
+    }).then(() => {
+      alert("장바구니 추가 성공");
+      nav("/cart");
+    });
+  };
+
   return (
     <div>
       <h1>도서상세페이지</h1>
@@ -62,7 +72,7 @@ function BookDetail() {
       <button onClick={onClickPlus}>+</button>
       <button onClick={onClickminus}>-</button>
       <div>금액: {total}</div>
-      <button onClick={onClickBookToCart}>장바구니에 담기</button>
+      <button onClick={handleCartAdd}>장바구니 추가</button>
       <button onClick={onClickDirect}>바로 주문하기</button>
     </div>
   );

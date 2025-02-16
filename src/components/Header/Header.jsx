@@ -5,11 +5,11 @@ axios.defaults.withCredentials = true;
 
 function Header() {
   const nav = useNavigate();
-  const [isLogIn, setIsLogIn] = useState("");
+  const [isLogIn, setIsLogIn] = useState(false);
 
   useEffect(() => {
-    axios.get("http://localhost:4001/indexCtrl").then((res) => {
-      setIsLogIn(!!res.data.user);
+    axios.get("http://localhost:4001/state").then((res) => {
+      setIsLogIn(res.data.loggedIn);
     });
   }, []);
 
@@ -18,8 +18,8 @@ function Header() {
   }
 
   function onClickLogin() {
-    if (isLogIn.length > 0) {
-      alert("로그인 되어 있는 상태");
+    if (isLogIn) {
+      alert("이미 로그인 된 상태입니다");
     } else {
       nav("/login");
     }
@@ -47,7 +47,7 @@ function Header() {
   }
 
   function onClickMyPage() {
-    if (isLogIn.length > 0) {
+    if (isLogIn) {
       nav("/mypage");
     } else {
       alert("로그인 해야합니다");
@@ -56,7 +56,7 @@ function Header() {
   }
 
   function onClickOrderList() {
-    if (isLogIn.length > 0) {
+    if (isLogIn) {
       nav("/orderlist");
     } else {
       alert("로그인 해야합니다");
@@ -70,17 +70,19 @@ function Header() {
       </div>
       <div>
         {isLogIn ? (
-          <span onClick={onClickLogout}>로그아웃</span>
+          <>
+            <span onClick={onClickLogout}>로그아웃</span>
+            <span onClick={onClickMyPage}>마이페이지</span>
+          </>
         ) : (
           <>
-            <span onClick={onClickLogin}>로그인</span>
             <span onClick={() => nav("/register")}>회원가입</span>
+            <span onClick={onClickLogin}>로그인</span>
           </>
         )}
         <span onClick={onClickBook}>도서목록</span>
         <span onClick={onClickCart}>장바구니</span>
         <span onClick={onClickOrderList}>주문목록</span>
-        <span onClick={onClickMyPage}>마이페이지</span>
       </div>
     </div>
   );

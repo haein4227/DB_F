@@ -42,15 +42,28 @@ function Book() {
   return (
     <div>
       <h1>도서목록</h1>
-      <input
-        type="text"
-        value={search}
-        onChange={onChangeSearch}
-        placeholder="도서명을 입력해 주세요..."
-      />
-      <ul>
+      <div style={{ margin: '20px 0' }}>
+        <input
+          type="text"
+          value={search}
+          onChange={onChangeSearch}
+          placeholder="도서명을 입력해 주세요..."
+          style={{ padding: '8px', width: '300px' }}
+        />
+      </div>
+      <ul style={{ listStyle: 'none', padding: 0 }}>
         {filterBookName.map((book) => (
-          <li key={book.book_id} onClick={() => onClickBook(book)}>
+          <li 
+            key={book.book_id} 
+            onClick={() => onClickBook(book)}
+            style={{ 
+              padding: '10px',
+              margin: '5px 0',
+              border: '1px solid #ddd',
+              cursor: 'pointer',
+              ':hover': { backgroundColor: '#f5f5f5' }
+            }}
+          >
             {book.book_name}
           </li>
         ))}
