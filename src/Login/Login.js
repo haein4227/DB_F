@@ -29,9 +29,11 @@ function Login() {
 //API 요청
   async function onClickLogin() {
     try {
-      const res = await axios.post("http://localhost:4001/loginCtrl", { user: userInfo });
-      console.log(res.data);
-      window.location.replace("/");
+      const res = await axios.post("http://localhost:4001/login", { 
+        id: userInfo.id,
+        pw: userInfo.pw
+      });
+      window.location.reload(); // 세션 갱신을 위한 강제 새로고침
     } catch (err) {
       const errorMessage = err.response?.data?.message ||
         "로그인에 실패했습니다. 다시 시도해주세요.";

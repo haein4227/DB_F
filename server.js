@@ -23,7 +23,12 @@ app.use(
     resave: true, // 세션이 수정되지 않아도 세션을 다시 저장할지 여부
     saveUninitialized: false, // 초기화되지 않은 세션을 저장할지 여부
     store: sessionStore, //DB에 session테이블이 만들어짐 <-여기에 세션 저장
-    cookie: { secure: false }, // HTTPS를 사용할 경우 true로 설정
+    cookie: { 
+      secure: false,
+      httpOnly: true,
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000 // 1일 유지
+    }, // HTTPS를 사용할 경우 true로 설정
   })
 );
 

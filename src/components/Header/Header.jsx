@@ -11,7 +11,7 @@ function Header() {
     axios.get("http://localhost:4001/state").then((res) => {
       setIsLogIn(res.data.loggedIn);
     });
-  }, []);
+  }, []); //에러 발생 
 
   function onClickMain() {
     nav("/");

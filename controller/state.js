@@ -1,6 +1,8 @@
 const pool = require("../DB/db");
 
 exports.getState = async (req, res) => {
-  const user = req.session.user;
-  res.send(user);
+  res.send({ 
+    loggedIn: !!req.session.user,
+    user: req.session.user || null
+  });
 };

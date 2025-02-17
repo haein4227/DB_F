@@ -11,38 +11,35 @@ function Main() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      .get("http://localhost:4001/indexCtrl")
+    axios.get("http://localhost:4001/state")
       .then((res) => {
-        if (res.data.user) {
-          setUserData(res.data);
+        if(res.data.loggedIn) {
+          setUserData(res.data.user);
         } else {
           setUserData(null);
         }
       })
-      //에러 처리 코드
-      .catch((error) => {
-        console.error("Error fetching user data: ", error);
-        setUserData(null);
-      });
   }, []);
 
   useEffect(() => {
-    axios.get("http://localhost:4001/book")
-      .then(res => setBookList(res.data.list))
-      .catch(err => console.error("Error fetching books:", err));
+    axios
+      .get("http://localhost:4001/book")
+      .then((res) => setBookList(res.data.list))
+      .catch((err) => console.error("Error fetching books:", err));
   }, []);
 
   const handleQuantityChange = (bookId, value) => {
-    setQuantities(prev => ({...prev, [bookId]: Number(value)}));
+    setQuantities((prev) => ({ ...prev, [bookId]: Number(value) }));
   };
 
   const handleAddToCart = (book) => {
-    axios.post("http://localhost:4001/cart", {
-      book_num: book.num,
-      amount: quantities[book.num] || 1
-    }).then(() => alert("장바구니 추가 성공"))
-      .catch(err => alert("추가 실패: " + err.response?.data?.msg));
+    axios
+      .post("http://localhost:4001/cart", {
+        book_num: book.num,
+        amount: quantities[book.num] || 1,
+      })
+      .then(() => alert("장바구니 추가 성공"))
+      .catch((err) => alert("추가 실패: " + err.response?.data?.msg));
   };
 
   //로딩 상태 관리 코드
@@ -51,7 +48,7 @@ function Main() {
       <div className="loading">
         <h2>미 로그인 상태입니다.</h2>
         <button onClick={() => navigate("/login")}>로그인 페이지로 가기</button>
-      </div> 
+      </div>
     );
   }
 
@@ -59,7 +56,7 @@ function Main() {
     <div>
       <h1>도서 목록</h1>
       <ul>
-        {bookList.map(book => (
+        {bookList.map((book) => (
           <li key={book.num}>
             {book.name} - {book.price}원 (재고: {book.inventory})
             <input
