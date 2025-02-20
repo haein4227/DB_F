@@ -6,6 +6,7 @@ import Login from "./Login/Login";
 import Book from "./Book/Book";
 import Order from "./Order/Order";
 import OrderList from "./Order/OrderList";
+import SignUp from "./SignUp/SignUp";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/book" element={<Book />} />
           <Route path="/order" element={<Order />} />
           <Route path="/orderlist" element={<OrderList />} />
+          <Route path="/signup" element={<SignUp />} />
         </Routes>
       </BrowserRouter>
     </div>

@@ -10,14 +10,14 @@ function Login() {
   });
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    axios.get("http://localhost:4001/loginCtrl")
-      .then(res => {
-        if(res.data.loggedIn) {
-          window.location.replace("/");
-        }
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios.get("http://localhost:4001/loginCtrl")
+  //     .then(res => {
+  //       if(res.data.loggedIn) {
+  //         window.location.replace("/");
+  //       }
+  //     });
+  // }, []);
 
   function onChangeLogin(e) {
     const { name, value } = e.target;
@@ -29,20 +29,21 @@ function Login() {
 //API 요청
   async function onClickLogin() {
     try {
-      const res = await axios.post("http://localhost:4001/login", { 
-        id: userInfo.id,
-        pw: userInfo.pw
-      });
-      window.location.reload(); // 세션 갱신을 위한 강제 새로고침
+      const res = await axios.post("http://localhost:4001/login", userInfo);
+      if(res.data.msg === "로그인 완료, 세션 저장") {
+        const urlParams = new URLSearchParams(window.location.search);
+        const returnUrl = urlParams.get('returnUrl') || '/';
+        window.location.href = returnUrl;
+      }
     } catch (err) {
-      const errorMessage = err.response?.data?.message ||
-        "로그인에 실패했습니다. 다시 시도해주세요.";
-      setError(errorMessage);
-      setSuccessMessage("");
-      console.error("로그인 오류:", err.response || err.message);
+      setError("로그인 실패: 유효하지 않은 계정 정보");
     }
   };
 //로그인 기능
+  function onClose() {
+    window.history.back(); // 단순히 이전 페이지로 이동
+  }
+
   return (
     <div>
       <h1>로그인</h1>

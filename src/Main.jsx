@@ -32,14 +32,21 @@ function Main() {
     setQuantities((prev) => ({ ...prev, [bookId]: Number(value) }));
   };
 
-  const handleAddToCart = (book) => {
-    axios
-      .post("http://localhost:4001/cart", {
+  const handleAddToCart = async (book) => {
+    if(!userData) {
+      alert('로그인이 필요합니다');
+      return navigate('/login');
+    }
+    
+    try {
+      await axios.post('http://localhost:4001/cart', {
         book_num: book.num,
-        amount: quantities[book.num] || 1,
-      })
-      .then(() => alert("장바구니 추가 성공"))
-      .catch((err) => alert("추가 실패: " + err.response?.data?.msg));
+        amount: quantities[book.num] || 1
+      });
+      alert('장바구니에 추가되었습니다');
+    } catch (err) {
+      alert('추가 실패: ' + err.response?.data?.msg);
+    }
   };
 
   //로딩 상태 관리 코드

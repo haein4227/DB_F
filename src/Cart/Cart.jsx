@@ -1,12 +1,13 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function Cart() {
   const [groupedItems, setGroupedItems] = useState({});
   const [total, setTotal] = useState(0);
   const [quantity, setQuantity] = useState(0);
   const nav = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     axios.get("http://localhost:4001/cart")
@@ -33,6 +34,16 @@ function Cart() {
       setQuantity(sumQuan);
     });
   }, []);
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      const res = await axios.get("http://localhost:4001/state");
+      if (!res.data.loggedIn) {
+        nav(`/login?returnUrl=${encodeURIComponent(window.location.pathname)}`);
+      }
+    };
+    checkLogin();
+  }, [nav]);
 
   console.log("총 금액: ", total, "총 수량: ", quantity);
 

@@ -8,27 +8,29 @@ function Header() {
   const [isLogIn, setIsLogIn] = useState(false);
 
   useEffect(() => {
-    axios.get("http://localhost:4001/state").then((res) => {
-      setIsLogIn(res.data.loggedIn);
-    });
-  }, []); //에러 발생 
+    axios.get("http://localhost:4001/state")
+      .then((res) => {
+        setIsLogIn(res.data.loggedIn);
+      })
+      .catch(() => setIsLogIn(false));
+  }, []);
 
   function onClickMain() {
     nav("/");
   }
 
   function onClickLogin() {
-    if (isLogIn) {
-      alert("이미 로그인 된 상태입니다");
-    } else {
-      nav("/login");
-    }
+    axios.get("http://localhost:4001/state").then((res) => {
+      if (res.data.loggedIn) {
+        alert("이미 로그인 된 상태입니다");
+      } else {
+        nav("/login");
+      }
+    });
   }
 
   function onClickLogout() {
-    axios.post("http://localhost:4001/indexCtrl").then((res) => {
-      console.log(res.data);
-      nav("/");
+    axios.post("http://localhost:4001/logout").then((res) => {
       window.location.reload();
     });
   }
@@ -38,12 +40,8 @@ function Header() {
   }
 
   function onClickCart() {
-    if (isLogIn) {
-      nav("/cart");
-    } else {
-      alert("로그인 해야합니다");
-      nav("/login");
-    }
+    const returnUrl = encodeURIComponent('/cart');
+    nav(`/login?returnUrl=${returnUrl}`);
   }
 
   function onClickMyPage() {

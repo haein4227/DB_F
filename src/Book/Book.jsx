@@ -7,10 +7,13 @@ function Book() {
   const [search, setSearch] = useState("");
   const [isLogin, setIsLogin] = useState("");
   const nav = useNavigate();
+  const [originalBooks, setOriginalBooks] = useState([]);
+  const [filteredBooks, setFilteredBooks] = useState([]);
 
   useEffect(() => {
     axios.get("http://localhost:4001/book").then((res) => {
-      setBookList(res.data.list);
+      setOriginalBooks(res.data.list);
+      setFilteredBooks(res.data.list);
       setIsLogin(res.data.user);
     });
   }, []);
@@ -32,16 +35,14 @@ function Book() {
   }
 
   function onChangeSearch(e) {
-    setSearch(e.target.value);
+    const searchTerm = e.target.value.toLowerCase();
+    const filtered = originalBooks.filter(book => 
+      book.book_name?.toLowerCase().includes(searchTerm) ||
+      book.author?.toLowerCase().includes(searchTerm)
+    );
+    setFilteredBooks(filtered);
   }
 
-  // const filterBookName = bookList.filter((book) =>
-  //   book.book_name.toLowerCase().includes(search.toLowerCase())
-  // );
-
-  const filterBookName = (bookList || []).filter((book) =>
-    book.book_name?.toLowerCase().includes(search.toLowerCase())
-  );
   console.log("현재 bookList 상태:", bookList); // 오류 수정 test
 
   return (
@@ -52,12 +53,12 @@ function Book() {
           type="text"
           value={search}
           onChange={onChangeSearch}
-          placeholder="도서명을 입력해 주세요..."
+          placeholder="도서명 또는 저자로 검색..."
           style={{ padding: "8px", width: "300px" }}
         />
       </div>
       <ul style={{ listStyle: "none", padding: 0 }}>
-        {filterBookName.map((book) => (
+        {filteredBooks.map((book) => (
           <li
             key={book.book_id}
             onClick={() => onClickBook(book)}
@@ -69,7 +70,7 @@ function Book() {
               ":hover": { backgroundColor: "#f5f5f5" },
             }}
           >
-            {book.book_name}
+            {book.book_name} (재고: {book.inventory})
           </li>
         ))}
       </ul>
