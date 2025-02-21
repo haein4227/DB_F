@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 axios.defaults.withCredentials = true;
 
@@ -9,6 +10,7 @@ function Login() {
     pw: "",
   });
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   // useEffect(() => {
   //   axios.get("http://localhost:4001/loginCtrl")
@@ -29,14 +31,23 @@ function Login() {
 //API 요청
   async function onClickLogin() {
     try {
-      const res = await axios.post("http://localhost:4001/login", userInfo);
-      if(res.data.msg === "로그인 완료, 세션 저장") {
-        const urlParams = new URLSearchParams(window.location.search);
-        const returnUrl = urlParams.get('returnUrl') || '/';
-        window.location.href = returnUrl;
+      const res = await axios.post("http://localhost:4001/login", {
+        id: userInfo.id,
+        pw: userInfo.pw
+      }, {
+        withCredentials: true //명시적 설정.
+      });
+      
+      console.log('Login response:', res.data);
+      
+      if (res.data.success) { //서버에 맞게 수정.
+        navigate('/', { replace: true });
+      } else {
+        setError(res.data.message || "로그인 실패");
       }
     } catch (err) {
-      setError("로그인 실패: 유효하지 않은 계정 정보");
+      setError(err.response?.data?.message || "서버 연결 실패");
+      console.error('Login error:', err);
     }
   };
 //로그인 기능

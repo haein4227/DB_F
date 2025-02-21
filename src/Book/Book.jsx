@@ -12,8 +12,10 @@ function Book() {
 
   useEffect(() => {
     axios.get("http://localhost:4001/book").then((res) => {
-      setOriginalBooks(res.data.list);
-      setFilteredBooks(res.data.list);
+      const books = res.data.list || [];
+      setOriginalBooks(books);
+      setFilteredBooks(books);
+      setBookList(books);
       setIsLogin(res.data.user);
     });
   }, []);
@@ -35,11 +37,16 @@ function Book() {
   }
 
   function onChangeSearch(e) {
-    const searchTerm = e.target.value.toLowerCase();
-    const filtered = originalBooks.filter(book => 
-      book.book_name?.toLowerCase().includes(searchTerm) ||
-      book.author?.toLowerCase().includes(searchTerm)
-    );
+    const searchTerm = e.target.value;
+    console.log('검색 입력:', searchTerm);
+    setSearch(searchTerm);
+    
+    const filtered = originalBooks.filter(book => {
+      const matchName = book.name?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchAuthor = book.author?.toLowerCase().includes(searchTerm.toLowerCase());
+      console.log(`책 ${book.name} 검색결과:`, matchName || matchAuthor);
+      return matchName || matchAuthor;
+    });
     setFilteredBooks(filtered);
   }
 
@@ -70,7 +77,7 @@ function Book() {
               ":hover": { backgroundColor: "#f5f5f5" },
             }}
           >
-            {book.book_name} (재고: {book.inventory})
+            {book.name} (재고: {book.inventory})
           </li>
         ))}
       </ul>

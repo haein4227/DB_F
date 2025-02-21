@@ -11,14 +11,21 @@ function Main() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("http://localhost:4001/state")
-      .then((res) => {
-        if(res.data.loggedIn) {
-          setUserData(res.data.user);
+    const checkLoginState = async () => {
+      try {
+        const res = await axios.get("http://localhost:4001/state");
+        console.log('Session check:', res.data); // 응답 구조 확인용
+        if(res.data.isLoggedIn && res.data.userInfo) { // 서버 응답 구조에 맞게 수정
+          setUserData(res.data.userInfo);
         } else {
-          setUserData(null);
+          setUserData(null); // 초기값을 null로 통일
         }
-      })
+      } catch (err) {
+        setUserData(null);
+        console.error('Session check error:', err);
+      }
+    };
+    checkLoginState();
   }, []);
 
   useEffect(() => {
@@ -51,6 +58,14 @@ function Main() {
 
   //로딩 상태 관리 코드
   if (userData === null) {
+    return (
+      <div className="loading">
+        <h2>로그인 상태를 확인하는 중입니다...</h2>
+      </div>
+    );
+  }
+
+  if (userData === false) {
     return (
       <div className="loading">
         <h2>미 로그인 상태입니다.</h2>
